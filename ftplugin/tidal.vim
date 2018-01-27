@@ -120,3 +120,10 @@ if !exists("g:tidal_no_mappings") || !g:tidal_no_mappings
     let i += 1
   endwhile
 endif
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" My Own Stuff
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Use sine as Pattern e.g.
+let contToPat n p = fmap round $ discretise n p

@@ -1,0 +1,24 @@
+#!/bin/sh
+
+samplesdir=${HOME}/tidal-samples
+
+cd $samplesdir
+snipsfile=${HOME}/.dotfiles/plugged/vim-snippets/snippets/tidal.snippets
+for d in *
+do
+if grep -q $d $snipsfile;
+  then
+    :
+  else
+    if [ -d $d ]; then
+      samp=$d
+snip=$(echo $samp | cut -c1-2)
+cat <<EOF >>$snipsfile
+snippet $snip "$samp" i
+	"$samp"
+
+EOF
+      fi
+fi
+done
+
