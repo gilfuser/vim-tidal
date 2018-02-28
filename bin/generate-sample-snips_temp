@@ -1,0 +1,38 @@
+#!/bin/sh
+samplesdir=${HOME}/tidal-samples
+
+cd $samplesdir
+snipsfile=${HOME}/.dotfiles/plugged/ultisnips/UltiSnips/tidal.snippets
+for d in */
+do
+    ( 
+    cd $d &&
+    if grep -q $d $snipsfile;
+    then
+        :
+    else
+        if [-d $d]; then
+            samp=$d
+            snip=$(echo $samp | cut -c1-2)
+cat <<EOF >>$snipsfile
+snippet $snip "$samp" i
+    $samp
+endsnippet
+
+EOF
+fi
+fi
+    )
+done
+
+
+#!/bin/sh
+
+samplesdir=${HOME}/tidal-samples
+
+cd $samplesdir
+snipsfile=${HOME}/.dotfiles/plugged/ultisnips/UltiSnips/tidal.snippets
+
+find . -mindepth 2 -type d -not -path '*/\.*' -exec sh -c "echo $d
+{}" \;
+
