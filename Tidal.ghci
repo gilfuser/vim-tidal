@@ -1,36 +1,226 @@
+:set -XOverloadedStrings
 :set prompt ""
+:set prompt-cont ""
 
-:module Sound.Tidal.Context
+import Sound.Tidal.Context
 
-import qualified Sound.Tidal.Scales as Scales
-import qualified Sound.Tidal.Chords as Chords
+-- total latency = oLatency + cFrameTimespan
+tidal <- startTidal (superdirtTarget {oLatency = 0.25, oAddress = "127.0.0.1", oPort = 57120}) (defaultConfig {cFrameTimespan = 1/20})
 
-(cps, nudger, getNow) <- cpsUtils'
+:{
+let p = streamReplace tidal
+    hush = streamHush tidal
+    list = streamList tidal
+    mute = streamMute tidal
+    unmute = streamUnmute tidal
+    solo = streamSolo tidal
+    unsolo = streamUnsolo tidal
+    once = streamOnce tidal
+    asap = once
+    nudgeAll = streamNudgeAll tidal
+    all = streamAll tidal
+    resetCycles = streamResetCycles tidal
+    setcps = asap . cps
+    xfade i = transition tidal True (Sound.Tidal.Transition.xfadeIn 4) i
+    xfadeIn i t = transition tidal True (Sound.Tidal.Transition.xfadeIn t) i
+    histpan i t = transition tidal True (Sound.Tidal.Transition.histpan t) i
+    wait i t = transition tidal True (Sound.Tidal.Transition.wait t) i
+    waitT i f t = transition tidal True (Sound.Tidal.Transition.waitT f t) i
+    jump i = transition tidal True (Sound.Tidal.Transition.jump) i
+    jumpIn i t = transition tidal True (Sound.Tidal.Transition.jumpIn t) i
+    jumpIn' i t = transition tidal True (Sound.Tidal.Transition.jumpIn' t) i
+    jumpMod i t = transition tidal True (Sound.Tidal.Transition.jumpMod t) i
+    mortal i lifespan release = transition tidal True (Sound.Tidal.Transition.mortal lifespan release) i
+    interpolate i = transition tidal True (Sound.Tidal.Transition.interpolate) i
+    interpolateIn i t = transition tidal True (Sound.Tidal.Transition.interpolateIn t) i
+    clutch i = transition tidal True (Sound.Tidal.Transition.clutch) i
+    clutchIn i t = transition tidal True (Sound.Tidal.Transition.clutchIn t) i
+    anticipate i = transition tidal True (Sound.Tidal.Transition.anticipate) i
+    anticipateIn i t = transition tidal True (Sound.Tidal.Transition.anticipateIn t) i
+    forId i t = transition tidal False (Sound.Tidal.Transition.mortalOverlay t) i
+    d1 = p 1 . (|< orbit 0) 
+    d2 = p 2 . (|< orbit 1) 
+    d3 = p 3 . (|< orbit 2) 
+    d4 = p 4 . (|< orbit 3) 
+    d5 = p 5 . (|< orbit 4) 
+    d6 = p 6 . (|< orbit 5) 
+    d7 = p 7 . (|< orbit 6) 
+    d8 = p 8 . (|< orbit 7) 
+    d9 = p 9 . (|< orbit 8)
+    d10 = p 10 . (|< orbit 9)
+    d11 = p 11 . (|< orbit 10)
+    d12 = p 12 . (|< orbit 11)
+    d13 = p 13
+    d14 = p 14
+    d15 = p 15
+    d16 = p 16
+:}
 
-(d1,t1) <- superDirtSetters getNow
-(d2,t2) <- superDirtSetters getNow
-(d3,t3) <- superDirtSetters getNow
-(d4,t4) <- superDirtSetters getNow
-(d5,t5) <- superDirtSetters getNow
-(d6,t6) <- superDirtSetters getNow
-(d7,t7) <- superDirtSetters getNow
-(d8,t8) <- superDirtSetters getNow
-(d9,t9) <- superDirtSetters getNow
-(d10,t10) <- superDirtSetters getNow
+:{
+let setI = streamSetI tidal
+    setF = streamSetF tidal
+    setS = streamSetS tidal
+    setR = streamSetI tidal
+    setB = streamSetB tidal
+:}
 
-(c1,ct1) <- dirtSetters getNow
-(c2,ct2) <- dirtSetters getNow
-(c3,ct3) <- dirtSetters getNow
-(c4,ct4) <- dirtSetters getNow
-(c5,ct5) <- dirtSetters getNow
-(c6,ct6) <- dirtSetters getNow
-(c7,ct7) <- dirtSetters getNow
-(c8,ct8) <- dirtSetters getNow
-(c9,ct9) <- dirtSetters getNow
-(c10,ct10) <- dirtSetters getNow
-
-let bps x = cps (x/2)
-let hush = mapM_ ($ silence) [c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10]
-let solo = (>>) hush
+:{
+let degree = pF "degree"
+    ctranspose = pF "ctranspose"
+    mtranspose = pF "mtranspose"
+    gtranspose = pF "gtranspose"
+    harmonic = pF "harmonic"
+    detune = pF "detune"
+    scalename = pS "scaleName"
+    tuning = pS "tuningName"
+    stepsPerOctave = pI "stepsPerOctave"
+    octaveRatio = pF "octaveRatio"
+    -- FXs Orbs
+    sfreq = pF "sfreq"
+    wet10 = pF "wet10"
+    wet20 = pF "wet20"
+    wet30 = pF "wet30"
+    wet40 = pF "wet40"
+    wet50 = pF "wet50"
+    -- wet60 = pF "wet60"
+    -- wet70 = pF "wet70"
+    -- wet80 = pF "wet80"
+    -- aliases
+    pitch = pF "pitch"
+    tape = pF "tape" -- in orb 0 and 2
+    wah = pF "wah" -- o 2 and 3
+    llfo = pF "llfo" -- o 1 and 3
+    comp = pF "comp"
+    ampFin = pF "ampFin"
+    orbx = pF "orbx"
+    redir = pI "redir"
+    -- pitchShift
+    pideg = pF "pideg"
+    pdisp = pF "pdisp"
+    tdisp = pF "tdisp"
+    slide = pF "slide"
+    -- tape
+    toffset = pF "toffset"
+    tdepth = pF "tdepth"
+    trate = pF "trate"
+    tphase = pF "tphase"
+    -- compressor
+    cctrl = pI "cctrl"
+    thresh = pF "thresh"
+    slopea = pF "slopea"
+    clamp = pF "clamp"
+    relax = pF "relax"
+    -- wah
+    wrate = pF "wrate"
+    depth = pF "depth"
+    sinsaw = pI "sinsaw"
+    jfreq = pF "jfreq"
+    jdepth = pF "jdepth"
+    -- lfo
+    sisap = pI "sisap"
+    lrate = pF "lrate"
+    iphase = pF "iphase"
+    lwidth = pF "lwidth"
+    midfreq = pF "midfreq"
+    hifreq = pF "hifreq"
+    -- ampFin
+    postAmp = pF "postAmp"
+    -- -------------------
+    vrate = pF "vrate"
+    -- vibrato = pF "vibrato"
+    vel = pF "vel"
+    modind = pF "modind"
+    mix = pF "mix"
+    lfospeed = pF "lfospeed"
+    crunchy = pF "crunchy"
+    res = pF "res"
+    lfodepth = pF "lfodepth"
+    sind = pF "sind"
+    smul = pF "smul"
+    satur = pF "satur"
+    lbhnp = pI "lbhnp"
+    fres = pF "fres"
+    -- change midi note and amp at once
+    ngain = grp [mF "n", mF "amp"]
+    -- vst reverbs -----------------
+    vwet = pF "vwet"
+    vdry = pF "vdry"
+    vdelay = pF "vdelay"
+    vsize = pF "vsize"
+    vlocut = pF "vlocut"
+    vhicut = pF "vhicut"
+    -- ? -------------------------
+    deltas = pI "deltas"
+    hrate = pF "hrate"
+    damp = pF "damp"
+    hsize = pF "hsize"
+    hdif = pF "hdif"
+    hfb = pF "hfb"
+    cof x = ccv x # ccn 2
+    -- phosycon ---------------
+    -- cutoff x = ccv x # ccn 2
+    -- reson x = ccv x # ccn 3
+    -- sweept x = ccv x # ccn 4
+    -- envmod x = ccv x # ccn 5
+    -- envatt x = ccv x # ccn 6
+    -- envdec x = ccv x # ccn 7
+    -- accdec x = ccv x # ccn 8
+    -- envacc x = ccv x # ccn 9
+    acutoff = pF "acutoff"
+    areson = pF "reson"
+    asweept = pF "asweept"
+    aenvmod = pF "aenvmod"
+    aenvatt = pF "aenvatt"
+    aenvdec = pF "aenvdec"
+    aaccdec = pF "aaccdec"
+    aenvacc = pF "aenvacc"
+    -- talnoise ---------------
+    tvol = pF "tvol"
+    tftype = pF "tftype"
+    tcut = pF "tcut"
+    tres = pF "tres"
+    tkfol = pF "tkfol"
+    tfcon = pF "tfcon"
+    tfatt = pF "tfatt"
+    tfdec = pF "tfdec"
+    tfsus = pF "tfsus"
+    tfrel = pF "tfrel"
+    tampa = pF "tampa"
+    tampd = pF "tampd"
+    tamps = pF "tamps"
+    tampr = pF "tampr"
+    tosc1v = pF "tosc1v"
+    tosc2v = pF "tosc2v"
+    tosc3v = pF "tosc3v"
+    tosc1wf = pF "tosc1wf"
+    tosc2wf = pF "tosc2wf"
+    tlfo1r = pF "tlfo1r"
+    tlfo2r = pF "tlfo2r"
+    tlfo1a = pF "tlfo1a"
+    tlfo2a = pF "tlfo2a"
+    -- modo bass --------------
+    movol x = ccv (x * 127) # ccn 7
+    momute x = ccv (x * 127) # ccn 9
+    mopluck x = ccv (x * 127) # ccn 3
+    modring x = ccv (x * 127) # ccn 64
+    mopluk x = ccv (x * 127) # ccn 3
+    mobend x = ccv (x * 127) # ccn 5
+    mohamp x = ccv (x * 127) # ccn 12
+    moslide x = ccv (x * 127) # ccn 65
+    moghos x = ccv (x * 127) # ccn 10
+    finger = ccn 13
+    palheta = ccn 14
+    slap = ccn 15
+    moharm x = ccv (x * 127) # ccn 17
+    moleft x = ccv (x * 127) # ccn 4
+    moforce x = ccn (x * 5 + 20)
+    ---------------------------
+    orb0 = pF "orb0"
+    orb1 = pF "orb1"
+    orb2 = pF "orb2"
+    orb3 = pF "orb3"
+    ---------------------------
+    c3 = pF "c3" -- stiff
+:}
 
 :set prompt "tidal> "

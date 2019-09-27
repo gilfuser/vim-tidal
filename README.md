@@ -34,9 +34,7 @@ It was originally based on [vim-slime](https://github.com/jpalardy/vim-slime).
 
 ## Install ##
 
-Make sure you have TidalCycles installed, with SuperDirt running. See [Getting
-Started with Tidal](https://tidalcycles.org/getting_started.html) page for more
-information.
+Make sure you have TidalCycles installed, with SuperDirt running. See [the Tidal wiki](https://tidalcycles.org/index.php/Userbase) for more information.
 
 ### Install tmux ###
 
@@ -60,59 +58,48 @@ If you happen to make it work, let me know so I can update this section!
 
 ### Install plugin ###
 
-You can download the latest release
-[here](https://github.com/munshkr/vim-tidal/releases) and extract the contents
-on your Vim directory (usually `~/.vim/`).  However, using a Vim plugins
-manager like [Vundle](https://github.com/gmarik/Vundle.vim) or
-[Pathogen](https://github.com/tpope/vim-pathogen/) is *highly recommended*.
-Install one of those if you don't have one.  Check those links for
-instructions.
+I recommend using a Vim plugin manager like
+[Plug](https://github.com/junegunn/vim-plug).  Check the link for instructions
+on installing and configuring.  If you don't want a plugin manager, you can
+also download the latest release
+[here](https://github.com/tidalcycles/vim-tidal/releases) and extract the
+contents on your Vim directory (usually `~/.vim/`).
 
-For example, with Vundle you would:
+For example, with Plug you need to:
 
   * Edit your `.vimrc` file and add these lines:
 
 ```vim
-Plugin 'munshkr/vim-tidal'
+Plug 'tidalcycles/vim-tidal'
 ```
 
-  * Restart Vim and execute `:PluginInstall` to automatically download and
+  * Restart Vim and execute `:PlugInstall` to automatically download and
     install the plugins.
 
 Finally, go to the plugin repository and run `make install`:
 
-    $ cd ~/.vim/bundle/vim-tidal
+    $ cd ~/.vim/plugged/vim-tidal
     $ sudo make install
 
 This creates symlinks on `/usr/local/bin` for `tidal` and `tidalvim` scripts.
 You can remove them later if you want with `make uninstall`.
 
-### Development version of Tidal (x.y-dev) ###
+Make sure to have the `filetype plugin on` setting on your .vimrc, otherwise
+plugin won't be loaded when opening a .tidal file.
 
-If you are using Tidal from a development branch or another branch different
-than *master*, you'll have to use the corresponding branch on vim-tidal.
+### Older Tidal versions (pre 1.0) ###
 
-Unfortunately Vundle doesn't support specific branches or tags when setting the
-Plugin line, but you can **pin** the plugin. This way Vundle will only clone
-the repo and not mess with it again. This also means from now on (while pinned)
-you'll have to manage the repo yourself (i.e. go to the repo dir and `git
-pull`, etc.)
+Tidal 1.0 introduces some breaking changes, so if haven't upgraded yet, you can
+still use this plugin with an older version. Just point your Plug entry to use
+the `tidal-0.9` branch.
 
-To sum up, pin the plugin with this:
+First change your Plug line on your `.vimrc` to:
 
 ```vim
-Plugin 'munshkr/vim-tidal', {'pinned': 1}
+Plug 'tidalcycles/vim-tidal', {'branch': 'tidal-0.9'}
 ```
 
-Then go to where your Vundle plugins reside (usually
-`~/.vim/bundle/vim-tidal`), and change to the development branch. For example
-if you are using Tidal 0.9-dev:
-
-```bash
-$ cd ~/.vim/bundle/vim-tidal
-$ git pull
-$ git checkout 0.9-dev origin/0.9-dev
-```
+Then on Vim run `:PlugInstall` to update your plugin. 
 
 
 ## Usage
@@ -354,10 +341,13 @@ this to sending current paragraph. If this is happening you either:
 
 1. Opened a file without `.tidal` extension, or changed file type accidentally.
    *Solution*: Reopen Vim or set filetype for current buffer with `:set
-   ft=haskell.tidal`.
+   ft=tidal`.
 2. Have `g:tidal_no_mappings` setting on your `.vimrc`. This disables all
    mappings.
    *Solution*: Remove `<c-e>` binding, or rebind to something else.
+
+It could also be that you do not have `filetype plugin on` setting in your
+.vimrc.  Make sure you have that setting defined.
 
 > I press `<c-e>` and nothing else happens
 
@@ -369,18 +359,18 @@ correctly.  See the Configure section above for more information.
 If you have any question or something does not work as expected, there are many
 channels you can go to:
 
-* [Ask TidalCycles](http://ask.tidalcycles.org/questions/) Q&A
-* Official [Tidal forum](http://lurk.org/groups/tidal/)
-* [TOPLAP #tidal channel](http://toplap.org/toplap-on-slack/)
-* [GitHub issues](https://github.com/munshkr/vim-tidal/issues/new)
+* [Chat](https://talk.lurk.org/): Reach out at the `#tidal` and `#vim` channels
+* [GitHub issues](https://github.com/tidalcycles/vim-tidal/issues/new)
+* [Official Tidal forum](https://we.lurk.org/postorius/lists/tidal.we.lurk.org/)
 
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
-<https://github.com/munshkr/vim-tidal>.  This project is intended to be a safe,
-welcoming space for collaboration, and contributors are expected to adhere to
-the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+<https://github.com/tidalcycles/vim-tidal>.  This project is intended to be a
+safe, welcoming space for collaboration, and contributors are expected to
+adhere to the [Contributor Covenant](http://contributor-covenant.org) code of
+conduct.
 
 
 ## License

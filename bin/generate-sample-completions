@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/bin/sh
 
 samplesdir=${HOME}/tidal-samples
@@ -22,3 +23,50 @@ EOF
 fi
 done
 
+=======
+#!/bin/bash
+
+allsampsdirs=${HOME}/tidal-samples/new_samples/
+
+cd "$allsampsdirs" || exit
+snipsfile=${HOME}/.dotfiles/plugged/ultisnips/UltiSnips/tidal.snippets
+snipnames=${HOME}/tidal-samples/new_samples/snips
+nbdir=0
+nbsubdir=0
+nbsamps=0
+
+for d in *
+do
+shopt -s nullglob # not the dotted stuff
+    if [ -d $d ]
+    then
+        ((nbdir++))
+        nbsubdir=0
+        # echo "nbdir: $d $nbdir"
+    fi
+    for s in $d/*
+    do
+        # ((nbsubdir++))
+        ((nbsamps++))
+        subdir="${s/*\//}"
+        sampdircount=$(find "$s" -maxdepth 1 -type f | wc -l)
+        # echo "sample$nbsubdir: "$subdir"_$sampdircount"
+        snip=$(sed "${nbsamps}q;d" "$snipnames")
+        # snip=$(echo "$subdir" | cut -c1-3)
+        # echo "$snip">>"$snipnames"
+
+        cat <<eof >>"$snipsfile"
+snippet $snip "$d $subdir $sampdircount" i
+$subdir
+endsnippet
+
+eof
+done
+done
+
+# while IFS='' read -r line || [[ -n "$line" ]]
+# do
+    # echo "POW!"
+    # echo "$line"
+# done < "$samplesyaml"
+>>>>>>> 5aff5229bd416771b386fc2b38685384bde2a32c

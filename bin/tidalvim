@@ -1,9 +1,10 @@
 #!/bin/bash
 set -euf -o pipefail
 
-VIM=${VIM:-"vim"}
+NVIM=${NVIM:-"nvim"}
 TMUX=${TMUX:-"tmux"}
 
+# SC=${SC:-"$(date +%F).scd"}
 FILE=${FILE:-"$(date +%F).tidal"}
 SESSION=${SESSION:-"tidal"}
 
@@ -12,12 +13,16 @@ TIDAL_TEMPO_IP=${TIDAL_TEMPO_IP:-""}
 GHCI=${GHCI:-""}
 
 args=${@:-$FILE}
-
+# scargs=${@:-$SC}
 # Check if tmux session "tidal" is running, attach only
 # else, create new session, split windows and run processes
+
 $TMUX -2 attach-session -t $SESSION || $TMUX -2 \
   new-session -s $SESSION   \; \
+  split-window -h -d \; \
   split-window -v -t $SESSION   \; \
-  send-keys -t 0 "$VIM $args" C-m   \; \
+  send-keys -t 0 "$NVIM $args" C-m   \; \
   send-keys -t 1 "TIDAL_BOOT_PATH=$TIDAL_BOOT_PATH TIDAL_TEMPO_IP=$TIDAL_TEMPO_IP GHCI=$GHCI tidal" C-m   \; \
+  # send-keys -t 2 "$NVIM $scargs" C-m   \; \
+  send-keys -t 2 "$NVIM" C-m   \; \
   select-pane -t 0
