@@ -18,8 +18,9 @@ args=${@:-$FILE}
 
 $TMUX -2 attach-session -t $SESSION || $TMUX -2 \
   new-session -s $SESSION   \; \
-  split-window -h -d \; \
-  split-window -v -t $SESSION   \; \
+    split-window -h -t $SESSION   \; \ # skmecs
+  # split-window -h -d \; \
+  # split-window -v -t $SESSION   \; \
   send-keys -t 0 "$VIM $args" C-m   \; \
   send-keys -t 1 "TIDAL_BOOT_PATH=$TIDAL_BOOT_PATH GHCI=$GHCI tidal" C-m   \; \
   select-pane -t 0

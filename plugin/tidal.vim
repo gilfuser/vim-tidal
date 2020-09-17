@@ -4,7 +4,7 @@ endif
 let g:loaded_tidal = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Tmux
+" Tmux xx
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 function! s:TmuxSend(config, text)
@@ -65,11 +65,11 @@ function! s:TerminalOpen()
   " Make terminal scroll to follow output
   :exe "normal G"
 
-  " Make small & on the bottom.
-  :exe "normal \<c-w>J"
+  " Make small & on the right.
+  :exe "normal \<c-w>L"
   :exe "normal \<c-w>\<c-w>"
   :exe "normal \<c-w>_"
-  :exe "normal \<c-w>10-"
+  :exe "normal \<c-w>120-"
 endfunction
 
 function! s:TerminalSend(config, text)
