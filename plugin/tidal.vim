@@ -36,6 +36,53 @@ function! s:TmuxConfig() abort
   endif
 endfunction
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Terminal
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let s:tidal_term = -1
+
+function! s:TerminalOpen()
+  if !has('nvim')
+    echom "'terminal' target currently supported on NeoVim only. Use 'tmux'"
+    return
+  endif
+
+  if s:tidal_term != -1
+    return
+  endif
+
+  split term://tidal
+
+  let s:tidal_term = b:terminal_job_id
+
+  " Give tidal a moment to start up so the command doesn't show up at the top
+  " unaesthetically.
+  " But this isn't very robust.
+  sleep 500m
+
+  " Make terminal scroll to follow output
+  :exe "normal G"
+
+  " Make small & on the bottom.
+  :exe "normal \<c-w>J"
+  :exe "normal \<c-w>\<c-w>"
+  :exe "normal \<c-w>_"
+  :exe "normal \<c-w>10-"
+endfunction
+
+function! s:TerminalSend(config, text)
+  call s:TerminalOpen()
+  call jobsend(s:tidal_term, a:text)
+endfunction
+
+" These two are unnecessary AFAIK.
+function! s:TerminalPaneNames(A,L,P)
+endfunction
+function! s:TerminalConfig() abort
+endfunction
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Helpers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
