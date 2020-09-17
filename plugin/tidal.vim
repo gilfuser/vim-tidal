@@ -69,7 +69,7 @@ function! s:TerminalOpen()
   :exe "normal \<c-w>L"
   :exe "normal \<c-w>\<c-w>"
   :exe "normal \<c-w>_"
-  :exe "normal \<c-w>120-"
+  :exe "normal \<c-w>120"
 endfunction
 
 function! s:TerminalSend(config, text)
